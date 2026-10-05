@@ -81,8 +81,13 @@ class MiniMaxClient(LLMClient):
             "model": chosen_model,
             "messages": list(messages),
             "stream": True,
-            # parse 3 will enable a "thinking" flag here when the provider
-            # supports it; for parse 2 we keep the request standard.
+            # parse 3: surface the active mode so providers / mocks can
+            # branch on it. Not part of the OpenAI spec but harmless if
+            # ignored by real upstream.
+            "mode": mode,
+            # parse 3: opt into reasoning-content streaming when the
+            # provider supports it. Real upstream may ignore this flag.
+            "thinking": mode == "reasoning",
         }
 
         logger.info(
@@ -100,12 +105,15 @@ class MiniMaxClient(LLMClient):
         response = await self._client.send(req, stream=True)
 
         if response.status_code >= 400:
-            # Read body so the error is actionable, then close.
-            body = (await response.aread()).decode("utf-8", "replace")
-            await self._client.aclose()
-            logger.error("MiniMax HTTP %s: %s", response.status_code, body)
+            # Don't close the underlying httpx client — the singleton is
+            # reused across requests and closing once would break all later
+            # calls. Just surface the body.
+            body = await response.aread()
+            await response.aclose()
+            text = body.decode("utf-8", "replace")
+            logger.error("MiniMax HTTP %s: %s", response.status_code, text)
             raise RuntimeError(
-                f"MiniMax returned {response.status_code}: {body[:300]}"
+                f"MiniMax returned {response.status_code}: {text[:300]}"
             )
 
         finish_reason: str | None = None

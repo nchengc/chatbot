@@ -13,6 +13,7 @@ exercised end-to-end.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 from typing import Any, AsyncIterator
@@ -23,7 +24,7 @@ from fastapi.responses import StreamingResponse
 app = FastAPI(title="mock-minimax")
 
 
-def _chunks(
+async def _chunks(
     text: str, *, reasoning: str = ""
 ) -> AsyncIterator[bytes]:
     """Yield OpenAI-style SSE chunks, one per char.
@@ -53,11 +54,11 @@ def _chunks(
     # parse 3: reasoning model emits thinking first
     for ch in reasoning:
         yield frame({"reasoning_content": ch}).encode()
-        time.sleep(0.01)
+        await asyncio.sleep(0.01)
 
     for ch in text:
         yield frame({"content": ch}).encode()
-        time.sleep(0.02)
+        await asyncio.sleep(0.02)
 
     yield frame({}, finish="stop").encode()
     yield b"data: [DONE]\n\n"
