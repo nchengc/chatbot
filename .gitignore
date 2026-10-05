@@ -1,0 +1,55 @@
+# =====================================================
+# Root .gitignore — covers backend/ + frontend/
+# =====================================================
+
+# OS / Editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Local env overrides (only examples are committed)
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Project data (SQLite, Chroma, uploads)
+backend/data/
+!backend/data/.gitkeep
+uploads/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# Playwright / 截图调试
+.playwright-mcp/
+*.png
+!docs/**/*.png
+
+# Claude Code 本地配置
+.claude/

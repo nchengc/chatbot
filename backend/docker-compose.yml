@@ -1,0 +1,27 @@
+# parse 0 — only the FastAPI service. Compose target: `docker compose up`.
+# parse 2+ will add chroma / ollama services when RAG / local inference are introduced.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chatbot-backend:dev
+    container_name: chatbot-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.example
+    environment:
+      # Allow connecting from the host machine's dev server.
+      CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+    volumes:
+      # Persist SQLite + Chroma across container restarts.
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/v1/health', timeout=3).raise_for_status()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

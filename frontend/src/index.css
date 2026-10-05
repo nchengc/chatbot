@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* Theme tokens — light is default; `.dark` on <html> flips to dark.   */
+/* Values are HSL components (so `<alpha-value>` works in Tailwind).    */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --bg: 0 0% 98%;
+  --bg-subtle: 0 0% 100%;
+  --bg-panel: 0 0% 100%;
+
+  --border: 220 13% 91%;
+  --border-strong: 220 13% 85%;
+
+  --fg: 220 13% 18%;
+  --fg-subtle: 220 9% 46%;
+  --fg-muted: 220 9% 60%;
+
+  --accent: 238 75% 55%;
+  --accent-hover: 238 80% 62%;
+}
+
+.dark {
+  --bg: 220 18% 7%;
+  --bg-subtle: 220 16% 10%;
+  --bg-panel: 220 15% 13%;
+
+  --border: 220 14% 16%;
+  --border-strong: 220 14% 22%;
+
+  --fg: 220 13% 92%;
+  --fg-subtle: 220 9% 70%;
+  --fg-muted: 220 6% 55%;
+
+  --accent: 238 80% 67%;
+  --accent-hover: 238 85% 75%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                 */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    font-family: theme("fontFamily.sans");
+    background: hsl(var(--bg));
+    color: hsl(var(--fg));
+  }
+
+  /* Slim scrollbar matching current theme. */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border-strong));
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors;
+  }
+  .btn-primary {
+    @apply btn text-white;
+    background: hsl(var(--accent));
+  }
+  .btn-primary:hover {
+    background: hsl(var(--accent-hover));
+  }
+  .btn-ghost {
+    @apply btn;
+    color: hsl(var(--fg-subtle));
+  }
+  .btn-ghost:hover {
+    background: hsl(var(--bg-panel));
+    color: hsl(var(--fg));
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Markdown render surface (react-markdown output).                     */
+/* ------------------------------------------------------------------ */
+
+.markdown :where(h1, h2, h3, h4, h5, h6) {
+  font-weight: 600;
+}
+.markdown :where(p) {
+  line-height: 1.65;
+}
+.markdown :where(ul, ol) {
+  padding-left: 1.25rem;
+}
+.markdown :where(ul) {
+  list-style: disc;
+}
+.markdown :where(ol) {
+  list-style: decimal;
+}
+.markdown :where(table) {
+  border-collapse: collapse;
+  width: 100%;
+}
+.markdown :where(blockquote) {
+  border-left: 2px solid hsl(var(--accent));
+  padding-left: 0.75rem;
+  color: hsl(var(--fg-subtle));
+  font-style: italic;
+}
+.markdown :where(hr) {
+  border-color: hsl(var(--border));
+  margin: 0.75rem 0;
+}
+.markdown a {
+  color: hsl(var(--accent));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.markdown code:not(pre code) {
+  background: hsl(var(--bg-subtle));
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.9em;
+  font-family: theme("fontFamily.mono");
+}
